@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>
-  <p><img width="20px" src="folder.png" alt="Folder Image">Assets for VTT<p>
+  <p><img id="folder" width="20px" src="folder.png" alt="Folder Image">Assets for VTT<p>
   <div id="passwordbox" class="container">
     <p>Enter Password to Show Index:</p>
     <input type="password" id="passphrase" placeholder="Password">
@@ -85,11 +85,11 @@
                 }
                 const text = await response.text();
                 document.getElementById('encrypted-data').innerText = text;
+                addPreview();
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('output').innerText = 'Failed to load index.txt';
                 document.getElementById('passwordbox').style.display = 'none';
-                addPreview();
             }
      }
      window.onload = loadIndex;
