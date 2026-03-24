@@ -38,7 +38,6 @@
     <input type="password" id="passphrase" placeholder="Password">
     <button onclick="handleDecrypt()">Unlock Index</button>
     <div id="encrypted-data" style="display:none;">
-      {"iv":"FSiDhM5VMmmcCJH5","salt":"QISt+x60wecmTQWmjeWu1w==","ciphertext":"qGgKil5WSAymRTxRok51kyXE3vSpmGVeVYOZluOHWgP/yaa/Ok1nzzeU8TVBjL9CH++jPDAP19gyQjWT"}
     </div>
     <div id="output"></div>
 </div>
@@ -82,6 +81,20 @@
             out.classList.add('error');
         }
     }
+    async function loadIndex() {
+            try {
+                const response = await fetch('index.txt');
+                if (!response.ok) {
+                    throw new Error('File not found or server error');
+                }
+                const text = await response.text();
+                document.getElementById('encrypted-data').innerText = text;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').innerText = 'Failed to load index.txt';
+            }
+     }
+     window.onload = loadTextFile;
 </script>
 </body>
 </html>

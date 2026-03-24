@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 async function encrypt(password, text) {
@@ -20,13 +22,46 @@ async function encrypt(password, text) {
         salt: salt.toString('base64'),
         ciphertext: fullCiphertext
     };
-    console.log("\n--- ENCRYPTED JSON ---");
-    console.log(JSON.stringify(result));
-    console.log("----------------------\n");
+    return JSON.stringify(result);
 }
 
-// --- USAGE ---
-const myPassword = "YourSecurePassword123";
-const mySecret = "This is a secret message hidden in the HTML!";
+//this file should NOT be committed to repo
+try {
+    const myPassword = fs.readFileSync("passphrase.txt", 'utf8');
+} catch (err) {
+    console.error('Please create a file "passphrase.txt" with your access password');
+    process.exit(1);
+}
+//this file should NOT be committed to repo
+const indexFile = './secretindex.txt';
 
-encrypt(myPassword, mySecret);
+const sourceDir = './updates';
+const targetDir = './images';
+const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+function build() {
+    //move all updates to renamed image files (update index as you go)
+    if (!fs.existsSync(indexFile)) {
+        fs.writeFileSync(indexFile, '');
+    }
+    try {
+        const files = fs.readdirSync(sourceDir);
+        files.forEach(file => {
+            const ext = path.extname(file).toLowerCase();
+            if (imageExtensions.includes(ext)) {
+                const randomName = crypto.randomBytes(16).toString('hex') + ext;
+                const oldPath = path.join(sourceDir, file);
+                const newPath = path.join(targetDir, randomName);
+                fs.renameSync(oldPath, newPath);
+                const logEntry = `<li> <a href="images/${randomName}"> ${file} </a></li>\n`;
+                fs.appendFileSync(indexFile, logEntry);
+            }
+        });
+    } catch (err) {
+        console.error('Error processing files:', err.message);
+        process.exit(1);
+    }
+    //complete the index by encrypting
+    const index = "<ul>"+ fs.readFileSync(indexFile, 'utf8') + "</ul>";
+    const encrypted = encrypt(myPassword, index);
+    await fs.writeFile("./index.txt", encrypted, 'utf8');
+}
