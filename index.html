@@ -30,6 +30,9 @@
     </div>
   </div>
   <div id="output" class="container"></div>
+  <div id="image-tooltip" style="display: none; position: fixed; pointer-events: none; z-index: 1000;">
+    <img id="tooltip-img" src="" style="max-width: 80px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+  </div>  
 <script>
     const b64ToUint8 = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     async function decryptData(password, encryptedJson) {
@@ -86,21 +89,39 @@
                 console.error('Error:', error);
                 document.getElementById('output').innerText = 'Failed to load index.txt';
                 document.getElementById('passwordbox').style.display = 'none';
+                addPreview();
             }
      }
      window.onload = loadIndex;
      window.addEventListener("message", (event) => {
-           if (event.data.action === "PASSWORD") handleDecryptP(event.data.password);
+         if (event.data.action === "PING") {
+             document.addEventListener('click', (event) => {
+                 const link = event.target.closest('a');
+                 if (link) {
+                     event.preventDefault();
+                     const destination = link.getAttribute('href');
+                     console.log("Navigation blocked! Doing this instead for:", destination);
+                     window.parent.postMessage({ action: "USEIMAGE", href: destination}, "*");
+                 }
+             });
+         } else if (event.data.action === "PASSWORD") handleDecryptP(event.data.password);
      });
-     document.addEventListener('click', (event) => {
-           const link = event.target.closest('a');
-           if (link) {
-              event.preventDefault();
-              const destination = link.getAttribute('href');
-              console.log("Navigation blocked! Doing this instead for:", destination);
-              window.parent.postMessage({ action: "USEIMAGE", href: destination}, "*");
-           }
-     });
+     function addPreview() {
+         const tooltip = document.getElementById('image-tooltip');
+         const tooltipImg = document.getElementById('tooltip-img');
+         document.querySelectorAll('a').forEach(link => {
+             link.addEventListener('mousemove', (e) => {
+                 tooltipImg.src = link.href;
+                 tooltip.style.display = 'block';
+                 tooltip.style.left = (e.clientX + 15) + 'px'; // 15px offset so it doesn't flicker
+                 tooltip.style.top = (e.clientY + 15) + 'px';
+             });
+             link.addEventListener('mouseleave', () => {
+                 tooltip.style.display = 'none';
+                 tooltipImg.src = ''; 
+             });
+         });
+     };
 </script>
 </body>
 </html>
