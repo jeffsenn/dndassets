@@ -7,6 +7,12 @@ I would like to share assets with players for my game - and the links need to be
 
 This is NOT SECURE!  It is intended for a website that has "security through obscurity" level privacy.  All assets are available if you know the URL.
 
+I use this for the spectacular AboveVTT web extension.
+
+If you do not want to go to the trouble of setting up stuff yourself, there are benefits to the 
+AboveVTT patreon (https://www.patreon.com/abovevtt) and you should probably check out the AboveVTT Discord (https://discord.gg/cMkYKqGzRh) for other options.
+
+
 ## Setup a Website
 
 ### At CloudFlare

@@ -22,10 +22,66 @@
             margin-top: 20px;
             border-radius: 8px;
         }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background: #f9f9f9; }
+        input { padding: 8px; width: 70%; margin-bottom: 10px; }
+        button { padding: 8px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        #output { margin-top: 20px; font-weight: bold; color: #2c3e50; white-space: pre-wrap; }
+        .error { color: #dc3545; }
     </style>
 </head>
 <body>
     <h1>Assets for VTT</h1>
-    <img src="images/index.png" alt="Folder Image">
+    <img src="folder.png" alt="Folder Image">
+  <div class="container">
+    <h2>🔒 Secured Assets</h2>
+    <p>Password:</p>
+    <input type="password" id="passphrase" placeholder="Password">
+    <button onclick="handleDecrypt()">Unlock Index</button>
+    <div id="encrypted-data" style="display:none;">
+      {"iv":"FSiDhM5VMmmcCJH5","salt":"QISt+x60wecmTQWmjeWu1w==","ciphertext":"qGgKil5WSAymRTxRok51kyXE3vSpmGVeVYOZluOHWgP/yaa/Ok1nzzeU8TVBjL9CH++jPDAP19gyQjWT"}
+    </div>
+    <div id="output"></div>
+</div>
+<script>
+    const b64ToUint8 = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    async function decryptData(password, encryptedJson) {
+        const { iv, salt, ciphertext } = JSON.parse(encryptedJson);
+        const enc = new TextEncoder();
+        const keyMaterial = await window.crypto.subtle.importKey(
+            "raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]
+        );
+        const key = await window.crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: b64ToUint8(salt),
+                iterations: 100000,
+                hash: "SHA-256"
+            },
+            keyMaterial,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["decrypt"]
+        );
+        const decrypted = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: b64ToUint8(iv) },
+            key,
+            b64ToUint8(ciphertext)
+        );
+        return new TextDecoder().decode(decrypted);
+    }
+    async function handleDecrypt() {
+        const pw = document.getElementById('passphrase').value;
+        const data = document.getElementById('encrypted-data').innerText;
+        const out = document.getElementById('output');
+        try {
+            const secret = await decryptData(pw, data);
+            out.innerHTML = secret;
+            out.classList.remove('error');
+        } catch (e) {
+            out.innerText = "❌ Incorrect password.";
+            out.classList.add('error');
+        }
+    }
+</script>
 </body>
 </html>
