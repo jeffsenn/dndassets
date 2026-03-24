@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { execSync } = require('child_process');
 
 async function encrypt(password, text) {
     const salt = crypto.randomBytes(16);
@@ -83,3 +84,13 @@ build().catch(err => {
     console.error("Build failed:", err);
     process.exit(1);
 });
+
+//send it
+try {
+    execSync('git add -A', { encoding: 'utf8' });
+    execSync('git commit -m updates', { encoding: 'utf8' });
+    execSync('git push', { encoding: 'utf8' });    
+} catch (error) {
+    console.error('Git command failed:', error.message);
+}
+

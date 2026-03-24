@@ -77,6 +77,7 @@
             out.innerHTML = secret;
             out.classList.remove('error');
         } catch (e) {
+            console.error("Error:", e);
             out.innerText = "❌ Incorrect password.";
             out.classList.add('error');
         }
@@ -94,7 +95,7 @@
                 document.getElementById('output').innerText = 'Failed to load index.txt';
             }
      }
-     window.onload = loadTextFile;
+     window.onload = loadIndex;
 </script>
 </body>
 </html>
