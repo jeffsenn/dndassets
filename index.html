@@ -25,8 +25,10 @@
     <p>
   <div id="passwordbox" class="container">
     <p>Enter Password to Show Index:</p>
-    <input type="password" id="passphrase" placeholder="Password">
-    <button onclick="handleDecrypt()">Unlock Index</button>
+    <form>
+    <input type="password" id="password" placeholder="Password">
+    <button id="login" onclick="handleDecrypt()">Unlock Index</button>
+    </form>
     <div id="encrypted-data" style="display:none;">
     </div>
   </div>
@@ -71,7 +73,7 @@
             out.innerHTML = "<ul>" + 
                 secret.split("\n").map((x) => {
                     const [fn, txt] = x.split(',')
-                    return txt ? `<li><a href="images/${fn}">${txt[1]}</a></li>` : ""
+                    return txt ? `<li><a href="images/${fn}">${txt}</a></li>` : ""
                 }).join("\n") +
                 "</ul>";
             out.classList.remove('error');
@@ -89,7 +91,7 @@
         }
     }
     async function handleDecrypt() {
-        return handleDecryptP(document.getElementById('passphrase').value);
+        return handleDecryptP(document.getElementById('password').value);
     }
     document.getElementById('remember-me').addEventListener('change', (e) => {
         if (!e.target.checked) {
@@ -110,7 +112,7 @@
                 const savedPw = localStorage.getItem(STORAGE_KEY);
                 if (savedPw) {
                     document.getElementById('remember-me').checked = true;
-                    document.getElementById('passphrase').value = savedPw;
+                    document.getElementById('password').value = savedPw;
                     handleDecryptP(savedPw);
                 }
                 
