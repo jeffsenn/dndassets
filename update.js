@@ -53,13 +53,8 @@ async function build() {
             const ext = path.extname(file).toLowerCase();
             if (imageExtensions.includes(ext)) {
                 const randomName = crypto.randomBytes(16).toString('hex') + ext;
-                const oldPath = path.join(sourceDir, file);
-                const newPath = path.join(targetDir, randomName);
-                
-                renames.push([oldPath, newPath]);
-                
-                const logEntry = `<li><a href="images/${randomName}">${file}</a></li>\n`;
-                indexappends.push(logEntry);
+                renames.push([path.join(sourceDir, file), path.join(targetDir, randomName)]);
+                indexappends.push(`${randomName},${file}`);
             }
         }
     } catch (err) {
@@ -71,7 +66,7 @@ async function build() {
     const encrypted = await encrypt(myPassword, indexContent);
     fs.writeFileSync("./index.txt", encrypted, 'utf8');
     // Move the files only after encryption succeeds
-    fs.appendFileSync(indexFile, indexappends.join(""));
+    fs.appendFileSync(indexFile, indexappends.join("\n"));
     renames.forEach(([oldPath, newPath]) => {
         fs.renameSync(oldPath, newPath);
         console.log(`Moved: ${path.basename(oldPath)} -> ${path.basename(newPath)}`);

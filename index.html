@@ -14,17 +14,15 @@
             padding: 4px;
         }
         .container { border: 1px solid #ccc; padding: 4px; border-radius: 8px; background: #f9f9f9; }
-        input { padding: 8px; width: 70%; margin-bottom: 10px; }
         button { padding: 8px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
         #output { margin-top: 2px; font-weight: bold; color: #2c3e50; white-space: pre-wrap; }
         .error { color: #dc2020; }
     </style>
 </head>
 <body>
-    <p><img id="folder" width="20px" src="folder.png" alt="Folder Image">Assets for VTT<p>
-    <div class="remember-wrap">
-        <input type="checkbox" id="remember-me"> <label for="remember-me">Remember Password</label>
-    </div>
+    <p><img id="folder" width="20px" src="folder.png" alt="Folder Image">Assets for VTT
+    <input type="checkbox" id="remember-me">&nbsp;Remember Password
+    <p>
   <div id="passwordbox" class="container">
     <p>Enter Password to Show Index:</p>
     <input type="password" id="passphrase" placeholder="Password">
@@ -92,6 +90,7 @@
             localStorage.removeItem(STORAGE_KEY);
         }
     });
+    document.getElementById('passwordbox')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleDecrypt(); });
     async function loadIndex() {
             try {
                 const response = await fetch('index.txt');
@@ -99,7 +98,16 @@
                     throw new Error('File not found or server error');
                 }
                 const text = await response.text();
-                document.getElementById('encrypted-data').innerText = text;
+                function entry(fn_txt) {
+                    return ;
+                }
+                document.getElementById('encrypted-data').innerText =
+                    "<ul>" + 
+                    text.split("\n").map((x) => {
+                        const [fn, txt] = x.split(',')
+                        return `<li><a href="images/${fn}">${txt[1]}</a></li>`
+                    }).join("\n") +
+                    "</ul>";
                 setTimeout(addPreview, 2000);
                 
                 // Check for saved password
@@ -112,7 +120,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('output').innerText = 'Failed to load index.txt';
+                document.getElementById('output').innerText = 'Failed to load encrypted index.txt';
                 document.getElementById('passwordbox').style.display = 'none';
             }
      }
