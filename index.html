@@ -98,14 +98,11 @@
                     throw new Error('File not found or server error');
                 }
                 const text = await response.text();
-                function entry(fn_txt) {
-                    return ;
-                }
                 document.getElementById('encrypted-data').innerText =
                     "<ul>" + 
                     text.split("\n").map((x) => {
                         const [fn, txt] = x.split(',')
-                        return `<li><a href="images/${fn}">${txt[1]}</a></li>`
+                        return txt ? `<li><a href="images/${fn}">${txt[1]}</a></li>` : ""
                     }).join("\n") +
                     "</ul>";
                 setTimeout(addPreview, 2000);
