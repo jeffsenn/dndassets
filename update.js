@@ -78,15 +78,15 @@ async function build() {
 build().catch(err => {
     console.error("Build failed:", err);
     process.exit(1);
+}).then(() => {
+    //send it
+    console.log("Commmit and Push...");
+    try {
+        execSync('git add -A', { encoding: 'utf8' });
+        execSync('git commit -m updates', { encoding: 'utf8' });
+        execSync('git push', { encoding: 'utf8' });    
+    } catch (error) {
+        console.error('Git command failed:', error.message);
+    }
+    console.log("Completed.");
 });
-
-//send it
-console.log("Commmit and Push...");
-try {
-    execSync('git add -A', { encoding: 'utf8' });
-    execSync('git commit -m updates', { encoding: 'utf8' });
-    execSync('git push', { encoding: 'utf8' });    
-} catch (error) {
-    console.error('Git command failed:', error.message);
-}
-console.log("Completed.");
