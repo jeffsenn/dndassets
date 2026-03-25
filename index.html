@@ -70,7 +70,7 @@
         const remember = document.getElementById('remember-me').checked;        
         try {
             const secret = await decryptData(pw, data);
-            out.innerHTML = "<ul>" + 
+            out.innerHTML = '<ul style="white-space:normal;">' + 
                 secret.split("\n").map((x) => {
                     const [fn, txt] = x.split(',')
                     return txt ? `<li><a href="images/${fn}">${txt}</a></li>` : ""
