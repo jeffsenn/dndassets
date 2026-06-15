@@ -38,7 +38,6 @@ const myPassword = getPassword("./passphrase.txt");
 const indexFile = './secretindex.txt';
 const sourceDir = './updates';
 const targetDir = './images';
-const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 
 async function build() {
     const renames = [];
@@ -50,12 +49,9 @@ async function build() {
         const files = fs.readdirSync(sourceDir);
         
         for (const file of files) {
-            const ext = path.extname(file).toLowerCase();
-            if (imageExtensions.includes(ext)) {
-                const randomName = crypto.randomBytes(16).toString('hex') + ext;
-                renames.push([path.join(sourceDir, file), path.join(targetDir, randomName)]);
-                indexappends.push(`${randomName},${file}`);
-            }
+            const randomName = crypto.randomBytes(16).toString('hex') + ext;
+            renames.push([path.join(sourceDir, file), path.join(targetDir, randomName)]);
+            indexappends.push(`${randomName},${file}`);
         }
     } catch (err) {
         console.error('Error processing files:', err.message);

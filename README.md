@@ -22,6 +22,7 @@ If you do not want to go to the trouble of setting up stuff yourself, and you ne
 1. Put copies of the resources you want into the `updates` directory (don't use sub-folders!, do use descriptive file names)
 1. Create a passphrase in `passphrase.txt`
 1. use `node update.js` to build and commit the site back to your repo
+1.  (This requires a command line git available to node, alternatively manually commit)
 1. deploy your website from the committed repo (one option is CloudFlare)
 
 Note: CloudFlare Pages does not present "directory style" pages for folder URLs -- make sure how ever you deploy does not provide this or the whole "security" mechanism here will just not work.  e.g. if users can see a directory: https://your-website.link/images/ then they can just see everything.
@@ -55,6 +56,10 @@ The script assigns random names to the image/resource files and them moves them 
 Of course only the admin needs the index -- direct links to the resources work as usual.
 
 There is also some integration stuff (iframe message interaction) that is used to interact with AboveVTT - but you can ignore that if you are not using AboveVTT.
+
+### The user experience
+
+If you navigate to the bare site URL, it will prompt you for the passphrase -- only if you know it (you are probably the "admin") then you can get the index of assets (with original filenames).  There is a checkbox to save the password (in browser local storage) so you don't have to type it all the time.  Clicking on a link will go to the bare "encrypted" URL.  If you are a tool wanting to save those links, then of course you can use the provided URL which should work in any context.
 
 ### AboveVTT Integration
 

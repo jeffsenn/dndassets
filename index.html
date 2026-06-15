@@ -145,16 +145,20 @@
          const tooltip = document.getElementById('image-tooltip');
          const tooltipImg = document.getElementById('tooltip-img');
          document.querySelectorAll('a').forEach(link => {
-             link.addEventListener('mousemove', (e) => {
-                 tooltipImg.src = link.href;
-                 tooltip.style.display = 'block';
-                 tooltip.style.left = (e.clientX + 15) + 'px'; // 15px offset so it doesn't flicker
-                 tooltip.style.top = (e.clientY + 15) + 'px';
-             });
-             link.addEventListener('mouseleave', () => {
-                 tooltip.style.display = 'none';
-                 tooltipImg.src = ''; 
-             });
+             const parts = new URL(url).pathname.split('.');
+             const ext = parts.length > 1 ? parts.pop() : '';
+             if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'].includes(ext)) {
+                 link.addEventListener('mousemove', (e) => {
+                     tooltipImg.src = link.href;
+                     tooltip.style.display = 'block';
+                     tooltip.style.left = (e.clientX + 15) + 'px';
+                     tooltip.style.top = (e.clientY + 15) + 'px';
+                 });
+                 link.addEventListener('mouseleave', () => {
+                     tooltip.style.display = 'none';
+                     tooltipImg.src = ''; 
+                 });
+             }
          });
      };
 </script>
