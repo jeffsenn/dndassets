@@ -68,7 +68,7 @@ async function build() {
         }
     }
     const copies = [];
-    const indexappends = ['<details open><summary></summary><ul>'];    
+    const indexappends = ['<details open><summary>All Assets</summary><ul>'];    
     if (!fs.existsSync(sourceDir)) fs.mkdirSync(sourceDir, { recursive: true });
     if (!fs.existsSync(indexFile)) fs.writeFileSync(indexFile, '');
     try {

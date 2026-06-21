@@ -137,6 +137,7 @@
              if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'].includes(ext)) {
                  link.addEventListener('mousemove', (e) => {
                      tooltipImg.src = link.href;
+                     sendNavigate(link.href);
                      tooltip.style.display = 'block';
                      tooltip.style.left = (e.clientX + 15) + 'px';
                      tooltip.style.top = (e.clientY + 15) + 'px';
@@ -149,7 +150,8 @@
          });
      };
      window.addEventListener('pagehide', (event) => {
-         sendNavigate(event.destination.url)
+         if(event.destination.url) 
+             sendNavigate(event.destination.url);
      });
 </script>
 </body>

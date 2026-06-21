@@ -20,8 +20,9 @@ If you do not want to go to the trouble of setting up stuff yourself, and you ne
 
 1. Fork this repo on Github (or make a clone and then push it to your own origin)
 1. Put copies of the resources you want into the `sources` directory -- use descriptive file names
+1. You can make a tree of files.
 1. Note that these source files are not committed as they are, but "encrypted" filename copies are made and committed.
-1. Create a passphrase in `passphrase.txt`
+1. Create a passphrase in `passphrase.txt` (this is for the admin, not "users")
 1. use `node update.js` to build and commit the site back to your repo
 1.  (This requires a command line git available to node, alternatively manually commit)
 1. deploy your website from the committed repo (one option is CloudFlare)
@@ -37,12 +38,11 @@ Note: CloudFlare Pages does not present "directory style" pages for folder URLs 
 1. Accept all the defaults (eg Leave "Build Command" empty)
 1. Click "Save and Deploy"
 
-Theoretically this does everything to redeploy your site when you push to your repo.  However on a free account you may be limited in number of deployments in a time period, so commit judiciously.
+Theoretically this does everything to redeploy your site each time when you push to your repo.  However on a free account you may be limited in number of deployments in a time period, so commit judiciously.
 
 ### Updating/Adding Resources
 
-1. Just add them to `sources/` directory 
-1. Delete anything you don't want from `images/`
+1. Just update `sources/` directory 
 1. Re-run `node update.js`  (copies files from `sources/` -> `images/`)
 
 ### Changing password
@@ -52,7 +52,7 @@ Theoretically this does everything to redeploy your site when you push to your r
 
 ### How it works
 
-The script assigns random names to the image/resource files and them moves them to the `images` directory.  It keeps a local (not committed) secret version of the index (with previous file names) in `secretindex.txt`.  This index is encrypted with the passphrase and deployed in `index.txt` with the website.  The script on the page will use a user entered passphrase to decrypt the index.
+The script assigns names to the image/resource files (based on their hash) and them moves them to the `images` directory.  It keeps a local (not committed) secret version of the index (with previous file names) in `secretindex.txt`.  This index is encrypted with the passphrase and deployed in `index.txt` with the website.  The script on the page will use a user entered passphrase to decrypt the index.
 
 Of course only the admin needs the index -- direct links to the resources work as usual.
 
@@ -64,4 +64,5 @@ If you navigate to the bare site URL, it will prompt you for the passphrase -- o
 
 ### AboveVTT Integration
 
-tbd
+When the page navigates it posts a message to the parent window with the url so that the parent (Presumably someone who is loading this in an iframe) can see what URL is "selected".
+
