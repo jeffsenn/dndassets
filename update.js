@@ -50,13 +50,13 @@ const sourceDir = './sources';
 const targetDir = './images';
 
 async function build() {
-    async function addFiles(sourceDir, copies, idx, open="") {
+    async function addFiles(sourceDir, copies, idx) {
         const files = fs.readdirSync(sourceDir, { withFileTypes: true });
         if(files.length) {
             for (const file of files) {
                 const fullPath = path.join(sourceDir, file.name);
                 if (file.isDirectory()) {
-                    idx.push("<details "+open+"><summary >"+file.name+"</summary><ul>");
+                    idx.push("<details><summary >"+file.name+"</summary><ul>");
                     await addFiles(fullPath, copies, idx);
                     idx.push("</ul></details>");
                 } else {
@@ -68,11 +68,11 @@ async function build() {
         }
     }
     const copies = [];
-    const indexappends = ['<details open><ul>'];    
+    const indexappends = ['<details open><summary></summary><ul>'];    
     if (!fs.existsSync(sourceDir)) fs.mkdirSync(sourceDir, { recursive: true });
     if (!fs.existsSync(indexFile)) fs.writeFileSync(indexFile, '');
     try {
-        await addFiles(sourceDir, copies, indexappends, "open");
+        await addFiles(sourceDir, copies, indexappends);
         indexappends.push('</ul></details>');    
     } catch (err) {
         console.error('Error processing files:', err.message);
