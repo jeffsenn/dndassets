@@ -39,6 +39,12 @@
   <script>
     const STORAGE_KEY = 'vtt_pass';
     const b64ToUint8 = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    function sendNavigate(url) {
+        window.parent.postMessage({
+            action: 'navigate',
+            url: url
+        }, '*');
+    }
     async function decryptData(password, encryptedJson) {
         const { iv, salt, ciphertext } = JSON.parse(encryptedJson);
         const enc = new TextEncoder();
@@ -70,12 +76,7 @@
         const remember = document.getElementById('remember-me').checked;        
         try {
             const secret = await decryptData(pw, data);
-            out.innerHTML = '<ul style="white-space:normal;">' + 
-                secret.split("\n").map((x) => {
-                    const [fn, txt] = x.split(',')
-                    return txt ? `<li><a href="images/${fn}">${txt}</a></li>` : ""
-                }).join("\n") +
-                "</ul>";
+            out.innerHTML = secret;
             out.classList.remove('error');
             document.getElementById('passwordbox').style.display = 'none';
             if (remember) {
@@ -126,21 +127,7 @@
                 document.getElementById('passwordbox').style.display = 'none';
             }
      }
-     window.onload = loadIndex;
-     window.addEventListener("message", (event) => {
-         //this sets up the parent event 
-         if (event.data.action === "PING") {
-             document.addEventListener('click', (event) => {
-                 const link = event.target.closest('a');
-                 if (link) {
-                     event.preventDefault();
-                     const destination = link.getAttribute('href');
-                     console.log("Navigation blocked! Doing this instead for:", destination);
-                     window.parent.postMessage({ action: "USEIMAGE", href: destination}, "*");
-                 }
-             });
-         } else if (event.data.action === "PASSWORD") handleDecryptP(event.data.password);
-     });
+     window.onload = () => { loadIndex(); sendNavigate(window.location.href); }
      function addPreview() {
          const tooltip = document.getElementById('image-tooltip');
          const tooltipImg = document.getElementById('tooltip-img');
@@ -161,6 +148,9 @@
              }
          });
      };
+     window.addEventListener('pagehide', (event) => {
+         sendNavigate(event.destination.url)
+     });
 </script>
 </body>
 </html>

@@ -25,6 +25,16 @@ async function encrypt(password, text) {
     return JSON.stringify(result);
 }
 
+function getFileChecksum(filePath, algorithm = 'sha256') {
+    return new Promise((resolve, reject) => {
+        const hash = crypto.createHash(algorithm);
+        const stream = fs.createReadStream(filePath);
+        stream.on('data', (data) => hash.update(data));
+        stream.on('end', () => resolve(hash.digest('hex')));
+        stream.on('error', (err) => reject(err));
+    });
+}
+
 function getPassword(fn) {
     try {
         return fs.readFileSync(fn, 'utf8').replace(/[\r\n]+/gm, "");
@@ -36,35 +46,48 @@ function getPassword(fn) {
 
 const myPassword = getPassword("./passphrase.txt");
 const indexFile = './secretindex.txt';
-const sourceDir = './updates';
+const sourceDir = './sources';
 const targetDir = './images';
 
 async function build() {
-    const renames = [];
-    const indexappends = [];    
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+    async function addFiles(sourceDir, copies, idx, open="") {
+        const files = fs.readdirSync(sourceDir, { withFileTypes: true });
+        if(files.length) {
+            for (const file of files) {
+                const fullPath = path.join(sourceDir, file.name);
+                if (file.isDirectory()) {
+                    idx.push("<details "+open+"><summary >"+file.name+"</summary><ul>");
+                    await addFiles(fullPath, copies, idx);
+                    idx.push("</ul></details>");
+                } else {
+                    const hashName = await getFileChecksum(fullPath)+path.extname(file.name);
+                    idx.push(`<li><a href="images/${hashName}">${file.name}</a></li>`);
+                    copies.push([fullPath, path.join(targetDir, hashName)]);
+                }
+            }
+        }
+    }
+    const copies = [];
+    const indexappends = ['<details open><ul>'];    
     if (!fs.existsSync(sourceDir)) fs.mkdirSync(sourceDir, { recursive: true });
     if (!fs.existsSync(indexFile)) fs.writeFileSync(indexFile, '');
     try {
-        const files = fs.readdirSync(sourceDir);
-        
-        for (const file of files) {
-            const randomName = crypto.randomBytes(16).toString('hex') + ext;
-            renames.push([path.join(sourceDir, file), path.join(targetDir, randomName)]);
-            indexappends.push(`${randomName},${file}`);
-        }
+        await addFiles(sourceDir, copies, indexappends, "open");
+        indexappends.push('</ul></details>');    
     } catch (err) {
         console.error('Error processing files:', err.message);
         process.exit(1);
     }
     // Encrypt the accumulated index
-    const indexContent = "<ul>\n" + fs.readFileSync(indexFile, 'utf8') + indexappends.join("") + "</ul>";
+    const indexContent = indexappends.join("");
     const encrypted = await encrypt(myPassword, indexContent);
     fs.writeFileSync("./index.txt", encrypted, 'utf8');
     // Move the files only after encryption succeeds
-    fs.appendFileSync(indexFile, indexappends.join("\n"));
-    renames.forEach(([oldPath, newPath]) => {
-        fs.renameSync(oldPath, newPath);
+    await fs.rmSync(targetDir, { recursive: true, force: true });
+    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+    fs.writeFileSync(indexFile, indexappends.join("\n"));
+    copies.forEach(([oldPath, newPath]) => {
+        fs.copyFileSync(oldPath, newPath);
         console.log(`Moved: ${path.basename(oldPath)} -> ${path.basename(newPath)}`);
     });
     console.log("Build complete. index.txt updated.");

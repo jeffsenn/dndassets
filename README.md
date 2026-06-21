@@ -5,7 +5,7 @@ This is a repository for hosting semi-private links to assets for my virtual tab
 
 I would like to share assets with players for my game - and the links need to be available without a complicated login process.
 
-This is NOT SECURE!  It is intended for a website that has "security through obscurity" level privacy.  All assets are available if you know the URL.
+This is NOT SECURE!  It is intended only for a website that has "security through obscurity" level privacy.  All assets are available if you know the URL. (But this is really what we want!)
 
 ## AboveVTT
 
@@ -19,7 +19,8 @@ If you do not want to go to the trouble of setting up stuff yourself, and you ne
 ### Using this repo
 
 1. Fork this repo on Github (or make a clone and then push it to your own origin)
-1. Put copies of the resources you want into the `updates` directory (don't use sub-folders!, do use descriptive file names)
+1. Put copies of the resources you want into the `sources` directory -- use descriptive file names
+1. Note that these source files are not committed as they are, but "encrypted" filename copies are made and committed.
 1. Create a passphrase in `passphrase.txt`
 1. use `node update.js` to build and commit the site back to your repo
 1.  (This requires a command line git available to node, alternatively manually commit)
@@ -40,14 +41,14 @@ Theoretically this does everything to redeploy your site when you push to your r
 
 ### Updating/Adding Resources
 
-1. Just add them to `updates/` directory 
+1. Just add them to `sources/` directory 
 1. Delete anything you don't want from `images/`
-1. Re-run `node updates.js`  (moves files from `updates/` -> `images/`)
+1. Re-run `node update.js`  (copies files from `sources/` -> `images/`)
 
 ### Changing password
 
 1. Change `passphrase.txt`
-1. Re-run `node updates.js`
+1. Re-run `node update.js`
 
 ### How it works
 
