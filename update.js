@@ -88,7 +88,7 @@ async function build() {
     fs.writeFileSync(indexFile, indexappends.join("\n"));
     copies.forEach(([oldPath, newPath]) => {
         fs.copyFileSync(oldPath, newPath);
-        console.log(`Moved: ${path.basename(oldPath)} -> ${path.basename(newPath)}`);
+        console.log(`Copied: ${path.basename(oldPath)} -> ${path.basename(newPath)}`);
     });
     console.log("Build complete. index.txt updated.");
 }
