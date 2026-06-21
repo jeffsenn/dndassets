@@ -40,6 +40,7 @@
     const STORAGE_KEY = 'vtt_pass';
     const b64ToUint8 = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     function sendNavigate(url) {
+        console.log("POST MSG", url);
         window.parent.postMessage({
             action: 'navigate',
             url: url
